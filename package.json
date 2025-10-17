@@ -53,14 +53,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sqlite/sqlite-wasm.git"
+    "url": "git+https://github.com/kat-tax/sqlite-wasm-cipher.git"
   },
-  "author": "Thomas Steiner (tomac@google.com)",
+  "author": "KATTAX",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/sqlite/sqlite-wasm/issues"
+    "url": "https://github.com/kat-tax/sqlite-wasm-cipher/issues"
   },
-  "homepage": "https://github.com/sqlite/sqlite-wasm#readme",
+  "homepage": "https://github.com/kat-tax/sqlite-wasm-cipher#readme",
   "devDependencies": {
     "decompress": "^4.2.1",
     "http-server": "github:vapier/http-server",
