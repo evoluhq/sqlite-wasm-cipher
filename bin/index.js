@@ -4,20 +4,26 @@ import fetch from 'node-fetch';
 import decompress from 'decompress';
 
 async function getSqliteWasmDownloadLink() {
-  const response = await fetch('https://sqlite.org/download.html');
-  const html = await response.text();
-  const sqliteWasmLink =
-    'https://sqlite.org/' +
-    html
-      .replace(
-        /^.*?<!-- Download product data for scripts to read(.*?)-->.*?$/gms,
-        '$1',
-      )
-      .split(/\n/)
-      .filter((row) => /sqlite-wasm/.test(row))[0]
-      .split(/,/)[2];
-  console.log(`Found SQLite Wasm download link: ${sqliteWasmLink}`);
-  return sqliteWasmLink;
+  const response = await fetch(
+    'https://api.github.com/repos/utelle/SQLite3MultipleCiphers/releases',
+  );
+  const releases = await response.json();
+
+  // Fail if no releases are found
+  if (!releases || releases.length === 0) {
+    throw new Error('No releases found for SQLite3MultipleCiphers repository');
+  }
+
+  // Get the latest release (first in the array)
+  const tagName = releases[0]?.tag_name?.replace('v', '');
+  if (!tagName) {
+    throw new Error('Unable to find tag name in latest release');
+  }
+
+  // Construct the download URL
+  const wasmLink = `https://github.com/utelle/SQLite3MultipleCiphers/releases/download/v${tagName}/sqlite3mc-${tagName}-sqlite-3.50.4-wasm.zip`;
+  console.log(`Found SQLite Wasm download link: ${wasmLink}`);
+  return wasmLink;
 }
 
 async function downloadAndUnzipSqliteWasm(sqliteWasmDownloadLink) {
