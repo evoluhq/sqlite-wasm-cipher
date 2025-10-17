@@ -20,10 +20,33 @@ async function getSqliteWasmDownloadLink() {
     throw new Error('Unable to find tag name in latest release');
   }
 
+  // Update package.json with the new version
+  await updatePackageJsonVersion(tagName);
+
   // Construct the download URL
   const wasmLink = `https://github.com/utelle/SQLite3MultipleCiphers/releases/download/v${tagName}/sqlite3mc-${tagName}-sqlite-3.50.4-wasm.zip`;
   console.log(`Found SQLite Wasm download link: ${wasmLink}`);
   return wasmLink;
+}
+
+async function updatePackageJsonVersion(tagName) {
+  try {
+    const packageJsonPath = './package.json';
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+    // Update the version with the tag name
+    packageJson.version = tagName;
+
+    // Write the updated package.json back to file
+    fs.writeFileSync(
+      packageJsonPath,
+      JSON.stringify(packageJson, null, 2) + '\n',
+    );
+    console.log(`Updated package.json version to: ${tagName}`);
+  } catch (err) {
+    console.error('Failed to update package.json:', err.message);
+    throw err;
+  }
 }
 
 async function downloadAndUnzipSqliteWasm(sqliteWasmDownloadLink) {
