@@ -4,32 +4,49 @@ import fetch from 'node-fetch';
 import decompress from 'decompress';
 
 async function getSqliteWasmDownloadLink(version = null) {
-  const response = await fetch('https://api.github.com/repos/utelle/SQLite3MultipleCiphers/releases');
+  const response = await fetch(
+    'https://api.github.com/repos/utelle/SQLite3MultipleCiphers/releases',
+  );
   const releases = await response.json();
   if (!releases || releases.length === 0) {
-    throw new Error('No releases found for SQLite3MultipleCiphers repository (likely a network error).');
+    throw new Error(
+      'No releases found for SQLite3MultipleCiphers repository (likely a network error).',
+    );
   }
 
   let tagName;
   let release;
 
   if (version) {
-    release = releases.find(release => release.tag_name === `v${version}` || release.tag_name === version);
+    release = releases.find(
+      (release) =>
+        release.tag_name === `v${version}` || release.tag_name === version,
+    );
     if (!release) {
-      const availableVersions = releases.slice(0, 5).map(r => r.tag_name).join(', ');
-      throw new Error(`Version ${version} not found. Available versions (latest 5): ${availableVersions}`);
+      const availableVersions = releases
+        .slice(0, 5)
+        .map((r) => r.tag_name)
+        .join(', ');
+      throw new Error(
+        `Version ${version} not found. Available versions (latest 5): ${availableVersions}`,
+      );
     }
     tagName = release.tag_name.replace('v', '');
     console.log(`Using specified version: ${tagName}`);
   } else {
-    tagName = releases[0].tag_name.replace('v', '');
+    release = releases[0];
+    tagName = release.tag_name.replace('v', '');
     console.log(`Using latest version: ${tagName}`);
   }
 
-  const asset = release?.assets?.find(asset => asset.browser_download_url.endsWith('wasm.zip'));
-  console.log(release?.assets);
+  const asset = release?.assets?.find((asset) =>
+    asset.browser_download_url.endsWith('wasm.zip'),
+  );
+
   if (!asset) {
-    throw new Error(`Unable to find SQLite Wasm download link in release ${tagName}`);
+    throw new Error(
+      `Unable to find SQLite Wasm download link in release ${tagName}`,
+    );
   }
 
   await updatePackageVersion(tagName);
@@ -49,7 +66,8 @@ async function downloadAndUnzipSqliteWasm(wasmLink) {
   fs.writeFileSync('sqlite-wasm.zip', Buffer.from(buffer));
   const files = await decompress('sqlite-wasm.zip', 'sqlite-wasm', {
     strip: 1,
-    filter: (file) => /jswasm/.test(file.path) && /(\.mjs|\.wasm|\.js)$/.test(file.path),
+    filter: (file) =>
+      /jswasm/.test(file.path) && /(\.mjs|\.wasm|\.js)$/.test(file.path),
   });
   console.log(
     `Downloaded and unzipped:\n${files
@@ -76,7 +94,8 @@ async function main() {
   try {
     const args = process.argv.slice(2);
     const index = args.indexOf('--version');
-    const version = (index !== -1 && index + 1 < args.length) ? args[index + 1] : null;
+    const version =
+      index !== -1 && index + 1 < args.length ? args[index + 1] : null;
     const wasmLink = await getSqliteWasmDownloadLink(version);
     await downloadAndUnzipSqliteWasm(wasmLink);
     fs.copyFileSync(

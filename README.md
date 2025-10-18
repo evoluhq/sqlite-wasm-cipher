@@ -1,6 +1,8 @@
 # SQLite Wasm
 
-> Note: This project is a fork of [SQLite Wasm](https://github.com/sqlite/sqlite-wasm) that uses [SQLite3MultipleCiphers](https://github.com/utelle/SQLite3MultipleCiphers).
+> Note: This project is a fork of
+> [SQLite Wasm](https://github.com/sqlite/sqlite-wasm) that uses
+> [SQLite3MultipleCiphers](https://github.com/utelle/SQLite3MultipleCiphers).
 
 SQLite Wasm conveniently wrapped as an ES Module.
 
@@ -218,8 +220,8 @@ Pages.) An example that shows how to use this with vite is available on
 ## Projects using this package
 
 See the list of
-[npm dependents](https://www.npmjs.com/browse/depended/sqlite-wasm-cipher)
-for this package.
+[npm dependents](https://www.npmjs.com/browse/depended/sqlite-wasm-cipher) for
+this package.
 
 ## Deploying a new version
 
@@ -244,4 +246,6 @@ This project is based on [SQLite Wasm](https://sqlite.org/wasm), which it
 conveniently wraps as an ES Module and publishes to npm as
 [`@sqlite.org/sqlite-wasm`](https://www.npmjs.com/package/@sqlite.org/sqlite-wasm).
 
-This project is also based on [SQLite3MultipleCiphers](https://github.com/utelle/SQLite3MultipleCiphers), which is used to support multiple ciphers.
+This project is also based on
+[SQLite3MultipleCiphers](https://github.com/utelle/SQLite3MultipleCiphers),
+which is used to support multiple ciphers.
