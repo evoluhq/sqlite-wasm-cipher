@@ -3,69 +3,53 @@ import fs from 'fs';
 import fetch from 'node-fetch';
 import decompress from 'decompress';
 
-async function getSqliteWasmDownloadLink() {
-  const response = await fetch(
-    'https://api.github.com/repos/utelle/SQLite3MultipleCiphers/releases',
-  );
+async function getSqliteWasmDownloadLink(version = null) {
+  const response = await fetch('https://api.github.com/repos/utelle/SQLite3MultipleCiphers/releases');
   const releases = await response.json();
-
-  // Fail if no releases are found
   if (!releases || releases.length === 0) {
-    throw new Error('No releases found for SQLite3MultipleCiphers repository');
+    throw new Error('No releases found for SQLite3MultipleCiphers repository (likely a network error).');
   }
 
-  // Get the latest release (first in the array)
-  const tagName = releases[0]?.tag_name?.replace('v', '');
-  if (!tagName) {
-    throw new Error('Unable to find tag name in latest release');
+  let tagName;
+  let release;
+
+  if (version) {
+    release = releases.find(release => release.tag_name === `v${version}` || release.tag_name === version);
+    if (!release) {
+      const availableVersions = releases.slice(0, 5).map(r => r.tag_name).join(', ');
+      throw new Error(`Version ${version} not found. Available versions (latest 5): ${availableVersions}`);
+    }
+    tagName = release.tag_name.replace('v', '');
+    console.log(`Using specified version: ${tagName}`);
+  } else {
+    tagName = releases[0].tag_name.replace('v', '');
+    console.log(`Using latest version: ${tagName}`);
   }
 
-  // Update package.json with the new version
-  await updatePackageJsonVersion(tagName);
+  const asset = release?.assets?.find(asset => asset.browser_download_url.endsWith('wasm.zip'));
+  console.log(release?.assets);
+  if (!asset) {
+    throw new Error(`Unable to find SQLite Wasm download link in release ${tagName}`);
+  }
 
-  // Construct the download URL
-  const wasmLink = `https://github.com/utelle/SQLite3MultipleCiphers/releases/download/v${tagName}/sqlite3mc-${tagName}-sqlite-3.50.4-wasm.zip`;
-  console.log(`Found SQLite Wasm download link: ${wasmLink}`);
-  return wasmLink;
+  await updatePackageVersion(tagName);
+  return asset.browser_download_url;
 }
 
-async function updatePackageJsonVersion(tagName) {
-  try {
-    const packageJsonPath = './package.json';
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-
-    // Update the version with the tag name
-    packageJson.version = tagName;
-
-    // Write the updated package.json back to file
-    fs.writeFileSync(
-      packageJsonPath,
-      JSON.stringify(packageJson, null, 2) + '\n',
-    );
-    console.log(`Updated package.json version to: ${tagName}`);
-  } catch (err) {
-    console.error('Failed to update package.json:', err.message);
-    throw err;
-  }
-}
-
-async function downloadAndUnzipSqliteWasm(sqliteWasmDownloadLink) {
-  if (!sqliteWasmDownloadLink) {
+async function downloadAndUnzipSqliteWasm(wasmLink) {
+  if (!wasmLink) {
     throw new Error('Unable to find SQLite Wasm download link');
   }
   console.log('Downloading and unzipping SQLite Wasm...');
-  const response = await fetch(sqliteWasmDownloadLink);
+  const response = await fetch(wasmLink);
   if (!response.ok || response.status !== 200) {
-    throw new Error(
-      `Unable to download SQLite Wasm from ${sqliteWasmDownloadLink}`,
-    );
+    throw new Error(`Unable to download SQLite Wasm from ${wasmLink}`);
   }
   const buffer = await response.arrayBuffer();
   fs.writeFileSync('sqlite-wasm.zip', Buffer.from(buffer));
   const files = await decompress('sqlite-wasm.zip', 'sqlite-wasm', {
     strip: 1,
-    filter: (file) =>
-      /jswasm/.test(file.path) && /(\.mjs|\.wasm|\.js)$/.test(file.path),
+    filter: (file) => /jswasm/.test(file.path) && /(\.mjs|\.wasm|\.js)$/.test(file.path),
   });
   console.log(
     `Downloaded and unzipped:\n${files
@@ -75,10 +59,26 @@ async function downloadAndUnzipSqliteWasm(sqliteWasmDownloadLink) {
   fs.rmSync('sqlite-wasm.zip');
 }
 
+async function updatePackageVersion(tagName) {
+  try {
+    const pkgPath = './package.json';
+    const pkgJson = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    pkgJson.version = tagName;
+    fs.writeFileSync(pkgPath, JSON.stringify(pkgJson, null, 2) + '\n');
+    console.log(`Updated package.json version to: ${tagName}`);
+  } catch (err) {
+    console.error('Failed to update package.json:', err.message);
+    throw err;
+  }
+}
+
 async function main() {
   try {
-    const sqliteWasmLink = await getSqliteWasmDownloadLink();
-    await downloadAndUnzipSqliteWasm(sqliteWasmLink);
+    const args = process.argv.slice(2);
+    const index = args.indexOf('--version');
+    const version = (index !== -1 && index + 1 < args.length) ? args[index + 1] : null;
+    const wasmLink = await getSqliteWasmDownloadLink(version);
+    await downloadAndUnzipSqliteWasm(wasmLink);
     fs.copyFileSync(
       './node_modules/module-workers-polyfill/module-workers-polyfill.min.js',
       './demo/module-workers-polyfill.min.js',
