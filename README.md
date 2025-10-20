@@ -1,5 +1,7 @@
 # SQLite Wasm
 
+[![npm version](https://img.shields.io/npm/v/sqlite-wasm-cipher.svg)](https://www.npmjs.com/package/sqlite-wasm-cipher)
+
 > Note: This project is a fork of
 > [SQLite Wasm](https://github.com/sqlite/sqlite-wasm) that uses
 > [SQLite3MultipleCiphers](https://github.com/utelle/SQLite3MultipleCiphers).
