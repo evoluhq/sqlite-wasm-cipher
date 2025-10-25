@@ -1,5 +1,5 @@
 {
-  "name": "sqlite-wasm-cipher",
+  "name": "@evolu/sqlite-wasm",
   "version": "2.2.4",
   "description": "SQLite Wasm conveniently wrapped as an ES Module. (Multiple Ciphers Support)",
   "keywords": [
@@ -11,6 +11,7 @@
     "sqlite3-multiple-ciphers",
     "webassembly",
     "cipher",
+    "evolu",
     "wasm",
     "esm",
     "opfs",

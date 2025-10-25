@@ -1,6 +1,6 @@
 # SQLite Wasm
 
-[![npm version](https://img.shields.io/npm/v/sqlite-wasm-cipher.svg)](https://www.npmjs.com/package/sqlite-wasm-cipher)
+[![npm version](https://img.shields.io/npm/v/@evolu/sqlite-wasm.svg)](https://www.npmjs.com/package/@evolu/sqlite-wasm)
 
 > Note: This project is a fork of
 > [SQLite Wasm](https://github.com/sqlite/sqlite-wasm) that uses
@@ -30,7 +30,7 @@ SQLite Wasm conveniently wrapped as an ES Module.
 ## Installation
 
 ```bash
-npm install sqlite-wasm-cipher
+npm install @evolu/sqlite-wasm
 ```
 
 ## Usage
@@ -56,7 +56,7 @@ storage back-end.
 > `Cross-Origin-Embedder-Policy: require-corp`
 
 ```js
-import { sqlite3Worker1Promiser } from 'sqlite-wasm-cipher';
+import { sqlite3Worker1Promiser } from '@evolu/sqlite-wasm';
 
 const log = console.log;
 const error = console.error;
@@ -116,7 +116,7 @@ const worker = new Worker('worker.js', { type: 'module' });
 
 ```js
 // In `worker.js`.
-import sqlite3InitModule from 'sqlite-wasm-cipher';
+import sqlite3InitModule from '@evolu/sqlite-wasm';
 
 const log = console.log;
 const error = console.error;
@@ -155,7 +155,7 @@ The `db` object above implements the
 ### In the main thread (without OPFS):
 
 ```js
-import sqlite3InitModule from 'sqlite-wasm-cipher';
+import sqlite3InitModule from '@evolu/sqlite-wasm';
 
 const log = console.log;
 const error = console.error;
@@ -202,7 +202,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['sqlite-wasm-cipher'],
+    exclude: ['@evolu/sqlite-wasm'],
   },
 });
 ```
@@ -222,7 +222,7 @@ Pages.) An example that shows how to use this with vite is available on
 ## Projects using this package
 
 See the list of
-[npm dependents](https://www.npmjs.com/browse/depended/sqlite-wasm-cipher) for
+[npm dependents](https://www.npmjs.com/browse/depended/@evolu/sqlite-wasm) for
 this package.
 
 ## Deploying a new version
