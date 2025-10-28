@@ -12,14 +12,16 @@ const error = (...args) => logHtml('error', ...args);
 
 const start = function (sqlite3, pool) {
   const ret = sqlite3.capi.sqlite3mc_vfs_create('opfs-sahpool', 1);
-  console.info(">> opfs vfs create:", ret);
+  console.info('>> opfs vfs create:', ret);
   const list = sqlite3.capi.sqlite3_js_vfs_list();
-  console.info(">> vfs list:", list);
+  console.info('>> vfs list:', list);
   log('Running SQLite3 version', sqlite3.version.libVersion);
   let db;
   if ('opfs' in sqlite3) {
     //db = new sqlite3.oo1.DB("/mydb.sqlite3",'ct', 'multipleciphers-opfs');
-    db = new pool.OpfsSAHPoolDb('file:mydb.sqlite3?vfs=multipleciphers-opfs-sahpool');
+    db = new pool.OpfsSAHPoolDb(
+      'file:mydb.sqlite3?vfs=multipleciphers-opfs-sahpool',
+    );
     log('OPFS is available, created persisted database at', db.filename);
   } else {
     db = new sqlite3.oo1.DB('/mydb.sqlite3', 'ct');
